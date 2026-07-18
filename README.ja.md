@@ -22,8 +22,6 @@ FlipCaptureは、多くのソフトウェア、AIモデル、研究成果を公�
 
 配布用ZIPはリポジトリの[Releasesページ](https://github.com/apusaras-droid/FlipCapture/releases)からも取得できます。
 
-リポジトリ準備、ライセンス確認、配布ZIP作成、Release公開までの再現手順は[GitHub公開・配布手順書](docs/GITHUB_RELEASE_GUIDE.ja.md)にまとめています。
-
 初期設定ではGUI起動から約0.5秒後にホットキー監視が自動で始まります。「起動時にホットキー監視を自動開始」を無効にすると、監視開始ボタンによる手動操作へ戻せます。
 
 初期表示言語は英語です。画面上部の`Language`から日本語へ切り替えられ、選択すると新しい言語で自動再起動します。独自言語は`locales`へUTF-8 JSONを追加できます。形式は[言語ファイルの説明](locales/README.md)を参照してください。
