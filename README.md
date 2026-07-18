@@ -22,8 +22,6 @@ A valid existing `.venv` is reused. Installation details are written to `logs/pi
 
 The release ZIP is also available from the repository's [Releases page](https://github.com/apusaras-droid/FlipCapture/releases).
 
-For the reproducible repository and release procedure, see the Japanese [GitHub publishing and distribution guide](docs/GITHUB_RELEASE_GUIDE.ja.md).
-
 ## Main features
 
 - Capture the monitor under the mouse cursor.
