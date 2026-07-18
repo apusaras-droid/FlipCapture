@@ -1,32 +1,90 @@
 # FlipCapture
 
-Windows向けの連続スクリーンキャプチャ／簡易アニメーション作成ツールです。CLIを中核として、Tkinter GUIから同じ機能を利用します。
+[English](README.md) | [日本語](README.ja.md)
 
-## セットアップと起動
+FlipCapture is a Windows screen-capture and lightweight animation utility. Its features are implemented in a reusable CLI core and exposed through a Tkinter GUI.
 
-事前に64bit版Python 3.11～3.13をインストールし、インストール画面で`Add python.exe to PATH`を有効にしてください。セットアップおよびAIモデルの初回取得にはインターネット接続が必要です。
+## Setup and launch
 
-1. `setup.bat` を実行します。仮想環境の作成、ライブラリ導入、依存関係・OCR・FFmpeg診断まで自動で行われます。
-2. `start_flipcapture.bat` を実行します。
-3. 入力方式、保存先、必要なら対象ウィンドウを選び「監視開始」を押します。
+Install 64-bit Python 3.11–3.13 first and enable `Add python.exe to PATH` in the Python installer. An internet connection is required during setup and when an AI model is downloaded for the first time.
 
-既存の`.venv`が正常なら再利用されます。導入ログは`logs/pip-install.log`、診断結果は`logs/setup-diagnostics.log`へ保存されます。セットアップ完了後は、そのままFlipCaptureを起動することもできます。自動処理では`setup.bat --no-launch`、ライブラリ導入を省略して再診断する場合は`setup.bat --no-launch --skip-install`を使用できます。
+1. Run `setup.bat`. It creates a virtual environment, installs the libraries, and checks dependencies, OCR, and FFmpeg.
+2. Run `start_flipcapture.bat`.
+3. Select an input mode and capture directory, optionally select a target window, and start monitoring.
 
-初期設定ではGUI起動から約0.5秒後にホットキー監視が自動で始まります。「起動時にホットキー監視を自動開始」を無効にすると、監視開始ボタンによる手動操作へ戻せます。
+A valid existing `.venv` is reused. Installation details are written to `logs/pip-install.log`, and diagnostic results to `logs/setup-diagnostics.log`. Setup can launch FlipCapture when it finishes. For automation, use `setup.bat --no-launch`. To skip installation and run diagnostics only, use `setup.bat --no-launch --skip-install`.
 
-初期表示言語は英語です。画面上部の`Language`から日本語へ切り替えられ、選択すると新しい言語で自動再起動します。独自言語は`locales`へUTF-8 JSONを追加できます。形式は[言語ファイルの説明](locales/README.md)を参照してください。
+The release ZIP is also available from the repository's [Releases page](https://github.com/apusaras-droid/FlipCapture/releases).
 
-閉じるボタンを押しても初期設定では終了せず、タスクトレイでホットキー監視を継続します。トレイメニューから画面表示、監視開始／停止、保存フォルダ表示、完全終了ができます。通常の閉じる動作へ戻す場合は`Keep running in task tray when closed`を無効にします。
+## Main features
 
-入力方式、保存先、OCR画質、矩形／ウィンドウ方式、通知・トレイ設定、アニメーション設定、前回のタブ、ウィンドウ位置とサイズは自動保存され、次回起動時に復元されます。
+- Capture the monitor under the mouse cursor.
+- Capture a selected window or interactively select a rectangular region.
+- Run Windows Runtime OCR on a selected region and copy the result to the clipboard.
+- Create animated WebP, GIF, or MP4 files from captured images.
+- Crop with a rectangle or freehand selection.
+- Remove backgrounds from people, characters, and objects with `u2net` or `isnet-anime`.
+- Automatically find a likely central subject.
+- Rotate images and correct skew automatically or from a manually drawn reference line.
+- Convert images to full-color SVG, outline SVG, or silhouette SVG and DXF.
+- Run continuously in the Windows task tray.
+- Switch between English and Japanese, or add custom JSON locale files.
+- Restore settings, the selected tab, and window placement on the next launch.
 
-初期設定では `Alt＋ホイール上` がマウスカーソルのあるモニター、`Alt＋ホイール下` が第2キャプチャです。「Alt＋左右クリック」へ切り替えた場合、左クリックがカーソル位置のモニター、右クリックが第2キャプチャになります。第2キャプチャは指定ウィンドウまたは毎回選択する矩形範囲から選べます。矩形方式では画面を固定表示し、ドラッグ後にEnterで切り抜いて保存します。Escでキャンセルできます。該当する入力は対象アプリへ送られません。指定ウィンドウが未選択の場合、その操作は画面通知なしでスキップされ、ログにのみ記録されます。
+Hotkey monitoring starts automatically about 0.5 seconds after the GUI opens. Disable `Start hotkey monitoring automatically` to use the manual start button instead.
 
-`Alt＋マウスホイールクリック（中ボタン）`はOCR専用です。カーソルがあるモニターを固定表示し、文字範囲をドラッグしてEnterを押すと、Windows標準の日本語OCRで認識してクリップボードへコピーします。OCR画質は「標準／高精度／小さい文字」から選べます。OCRはPC内で実行され、画像や文字を外部サービスへ送信しません。
+English is the default language. Select Japanese from `Language` to restart the application in Japanese. Additional UTF-8 JSON languages can be added to `locales`; see the [locale file guide](locales/README.md).
 
-管理者として動いているアプリ上の入力を取得するには、本ツール側も同じ権限が必要になる場合があります。認証情報は保存しません。
+Closing the window keeps FlipCapture running in the task tray by default. The tray menu can restore the window, start or stop monitoring, open the capture directory, or exit completely. Disable `Keep running in task tray when closed` to restore normal close behavior.
 
-「起動時に管理者権限を要求」を有効にすると、次回以降のGUI起動時にWindows標準のUAC確認が表示されます。有効にした直後、その場で管理者権限による再起動を選ぶこともできます。無効に戻せば通常権限で起動します。
+## Capture controls
+
+In wheel mode:
+
+- `Alt + Wheel Up`: capture the monitor under the cursor.
+- `Alt + Wheel Down`: perform the secondary capture.
+
+In mouse-button mode:
+
+- `Alt + Left Click`: capture the monitor under the cursor.
+- `Alt + Right Click`: perform the secondary capture.
+
+The secondary capture can target a selected window or open an interactive rectangular selector. The selector freezes only the monitor under the cursor; drag a region and press Enter to save it, or Esc to cancel. Captured mouse input is suppressed instead of being forwarded to the target application. If no target window is selected, the action is skipped without a dialog and recorded only in the log.
+
+`Alt + Middle Click` opens the OCR selector on the monitor under the cursor. Drag over the text and press Enter to recognize it with Windows OCR and copy it to the clipboard. OCR quality can be set to Standard, High accuracy, or Small text. OCR runs locally and does not upload images or recognized text.
+
+Capturing applications running as administrator may require FlipCapture to run with the same privileges. Enabling `Request administrator privileges at startup` causes Windows to display its standard UAC prompt on future launches. FlipCapture does not store credentials.
+
+## Image editing
+
+Select one image from the image list and choose Crop to draw a rectangle or freehand region. The result can overwrite the source or be saved with `_trim` in its name. If that name already exists, FlipCapture adds a suffix such as `_trim_2`.
+
+Enable AI background removal to extract a person, character, or object inside the selected area and save it as a transparent WebP. `u2net` is intended for general images, while `isnet-anime` is intended for illustrations and characters. Models are downloaded on first use, but the image processing itself remains local.
+
+Automatic subject detection selects a foreground candidate based on its size and distance from the image center. The detected rectangle can be adjusted manually before saving.
+
+The Rotate dialog supports 90-degree steps, 180 degrees, automatic skew correction from long lines, and manual correction from a user-drawn horizontal or vertical reference line. Results can overwrite the source or be saved as `_rotated.webp`.
+
+Vectorization supports:
+
+- Full-color SVG for preserving appearance and shading.
+- Outline SVG for editable boundaries.
+- Silhouette SVG and DXF for CAD or cutting workflows.
+
+Silhouette DXF can include only the closed exterior `LWPOLYLINE` on the `SILHOUETTE` layer, or also add open internal lines such as eyes, mouth, hair, and clothing on the `INTERNAL` layer. One image pixel equals one DXF drawing unit.
+
+## Animation and FFmpeg
+
+Animation output supports `.webp`, `.gif`, and `.mp4`. MP4 requires FFmpeg. FlipCapture checks for FFmpeg at startup and removes MP4 from the GUI when it is unavailable. It searches these locations before the system `PATH`:
+
+- `tools\ffmpeg\bin\ffmpeg.exe`
+- `tools\ffmpeg.exe`
+
+WebP and GIF remain available without FFmpeg. The CLI returns an explicit error if MP4 is requested without FFmpeg.
+
+AI model downloads display progress and use a 10-second connection timeout, a 30-second read timeout, and a 180-second overall timeout. Downloads support cancellation and MD5 verification.
+
+Settings are stored in `config/settings.json`. Runtime logs and structured event records are stored in `logs/flipcapture_YYYYMMDD.log`.
 
 ## CLI
 
@@ -45,24 +103,6 @@ python -m flipcapture rotate image.webp --angle 90
 python -m flipcapture deskew image.webp -o corrected.webp
 ```
 
-`animate` の出力拡張子には `.webp`、`.gif`、`.mp4` を指定できます。MP4にはPATH上のFFmpegが必要です。
+## License
 
-起動時にFFmpegを検証し、見つからない場合はGUIのMP4選択肢を無効化します。PATH以外に `tools\ffmpeg\bin\ffmpeg.exe` または `tools\ffmpeg.exe` へ配置したバイナリも自動検出します。CLIでMP4を指定した場合は明示的なエラーを返します。
-
-AIモデルの初回取得画面には進捗率を表示します。接続10秒、データ待機30秒、全体180秒のタイムアウトを設け、キャンセル操作とMD5検証に対応しています。
-
-設定は `config/settings.json`、動作ログとJSON形式の操作イベントは `logs/flipcapture_YYYYMMDD.log` に保存されます。
-
-画像一覧で画像を1枚選択して「トリミング」を押すと、ドラッグ操作で保存範囲を指定できます。元画像への上書き、または元の名前に `_trim` を付けた新規画像としての保存を選べます。同名の別画像がすでにある場合は `_trim_2` のように連番を付けます。
-
-画像一覧の「回転」では、左90度、右90度、180度に加え、画像内の長い直線を使った自動傾き補正ができます。「基準線を手動指定」では、水平または垂直にしたい線の始点と終点をクリックして補正できます。結果をプレビューしてから、元画像へ上書きまたは `_rotated.webp` の別名で保存できます。
-
-トリミング画面の「AIで切り出し、背景を透過」を有効にすると、選択範囲内の人物・キャラクター・小物を抽出して透過WebPで保存します。`u2net` は汎用、`isnet-anime` はイラスト／キャラクター向けです。AIモデルは初回使用時に自動取得されるため、初回だけ時間とインターネット接続が必要です。画像は外部サービスへ送信されず、処理はPC内で行われます。
-
-「中央の対象を自動検出」は、前景候補の面積と画像中央への近さから対象を選び、トリミング範囲を自動設定します。検出後の矩形はドラッグで指定し直せます。複数の対象がある画像では、保存前に範囲を確認してください。
-
-「フリーハンド」を選ぶと、マウスで囲んだ範囲の外側を透明化できます。AI背景透過と併用した場合、囲み線はAIへの制約として働き、範囲内ではAIが小物やキャラクターの輪郭を抽出します。フリーハンド使用時の出力は透過WebPです。
-
-画像一覧の「ベクター化」では、フルカラーSVG、輪郭線SVG、シルエットSVG＋DXFから方式を選択できます。フルカラーは見た目重視、輪郭線は編集用、シルエットはCADや切断加工向けです。DXFでは1ピクセルを1作図単位として出力します。
-
-シルエットDXFでは「外形線のみ」と「外形線＋内部線」を選択できます。外形線は閉じた `LWPOLYLINE` として `SILHOUETTE` レイヤーへ、目・口・髪・服などの内部線は開いた `LWPOLYLINE` として `INTERNAL` レイヤーへ出力します。
+FlipCapture is distributed under the GNU General Public License v3.0. The bundled Zen Kaku Gothic New font is distributed under the SIL Open Font License 1.1; its license text is included with the font files.
