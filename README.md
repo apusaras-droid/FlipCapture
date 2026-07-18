@@ -4,6 +4,12 @@
 
 FlipCapture is a Windows screen-capture and lightweight animation utility. Its features are implemented in a reusable CLI core and exposed through a Tkinter GUI.
 
+> **License:** FlipCapture is free software distributed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE).
+
+> **AI-assisted development:** This project was developed through iterative AI-assisted coding, including OpenAI ChatGPT/Codex, under human direction. Requirements, feature choices, testing, review, and release decisions were made by the project owner. AI-generated code and documentation were reviewed and tested, but users should report any remaining problems.
+
+FlipCapture would not exist without the developers, researchers, and maintainers of the software and models on which it is built. See [Acknowledgements](ACKNOWLEDGEMENTS.md) for the full credits.
+
 ## Setup and launch
 
 Install 64-bit Python 3.11–3.13 first and enable `Add python.exe to PATH` in the Python installer. An internet connection is required during setup and when an AI model is downloaded for the first time.
@@ -105,4 +111,6 @@ python -m flipcapture deskew image.webp -o corrected.webp
 
 ## License
 
-FlipCapture is distributed under the GNU General Public License v3.0. The bundled Zen Kaku Gothic New font is distributed under the SIL Open Font License 1.1; its license text is included with the font files.
+FlipCapture is distributed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE) for the complete license text.
+
+Third-party programs, libraries, models, and assets remain subject to their respective licenses. The bundled Zen Kaku Gothic New font is distributed under the SIL Open Font License 1.1; its license text is included with the font files. See [Acknowledgements](ACKNOWLEDGEMENTS.md) for project links and credits.

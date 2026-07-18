@@ -4,6 +4,12 @@
 
 Windows向けの連続スクリーンキャプチャ／簡易アニメーション作成ツールです。CLIを中核として、Tkinter GUIから同じ機能を利用します。
 
+> **ライセンス：** FlipCaptureは**GNU General Public License v3.0（GPL-3.0）**で配布するフリーソフトウェアです。全文は[LICENSE](LICENSE)を確認してください。
+
+> **AI支援開発について：** 本プロジェクトは、OpenAI ChatGPT/Codexを含むAIとの反復的な対話によるコーディング支援を受け、人間の指示・判断のもとで開発しました。要件、機能選択、テスト、レビュー、公開判断はプロジェクト所有者が行っています。AIが生成したコードと文書は確認・テストしていますが、問題が残っている場合は報告をお願いします。
+
+FlipCaptureは、多くのソフトウェア、AIモデル、研究成果を公開してくださった開発者・研究者・メンテナーの皆様のおかげで実現できました。詳細は[謝辞](ACKNOWLEDGEMENTS.md)をご覧ください。
+
 ## セットアップと起動
 
 事前に64bit版Python 3.11～3.13をインストールし、インストール画面で`Add python.exe to PATH`を有効にしてください。セットアップおよびAIモデルの初回取得にはインターネット接続が必要です。
@@ -73,4 +79,6 @@ AIモデルの初回取得画面には進捗率を表示します。接続10秒�
 
 ## ライセンス
 
-FlipCaptureはGNU General Public License v3.0で配布します。同梱のZen Kaku Gothic NewフォントはSIL Open Font License 1.1で配布され、ライセンス本文をフォントと一緒に収録しています。
+FlipCaptureは**GNU General Public License v3.0（GPL-3.0）**で配布します。ライセンス全文は[LICENSE](LICENSE)に収録しています。
+
+各種プログラム、ライブラリ、AIモデル、素材には、それぞれのライセンスが適用されます。同梱のZen Kaku Gothic NewフォントはSIL Open Font License 1.1で配布され、ライセンス本文をフォントと一緒に収録しています。プロジェクトへのリンクと謝辞は[ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)をご覧ください。
