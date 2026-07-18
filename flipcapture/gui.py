@@ -32,6 +32,7 @@ from .settings import Settings, fit_window_geometry, save_settings
 from .tray import TrayController
 from .vector_dialog import VectorizeDialog
 from .windows import TargetWindowNotSelected, WindowInfo, list_windows
+from . import __version__
 
 
 class FlipCaptureApp(tk.Tk):
@@ -58,7 +59,7 @@ class FlipCaptureApp(tk.Tk):
         self.hook = MouseCaptureHook(
             lambda: self.settings.capture_input_mode, self._hotkey_full, self._hotkey_secondary, self._hotkey_ocr
         )
-        self.title("FlipCapture 1.0")
+        self.title(f"FlipCapture {__version__}")
         default_width = round(1040 * self.ui_scale)
         default_height = min(round(840 * self.ui_scale), max(700, self.winfo_screenheight() - 80))
         geometry = self.settings.window_geometry or f"{default_width}x{default_height}"
