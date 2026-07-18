@@ -8,6 +8,7 @@ from pathlib import Path
 from tkinter import messagebox, ttk
 from typing import Callable
 
+import mss
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageTk
 
 from .background_removal import detect_central_subject, remove_background
@@ -31,6 +32,7 @@ def apply_lasso_mask(image: Image.Image, points: list[tuple[int, int]], feather:
 class CropDialog(tk.Toplevel):
     def __init__(self, parent: tk.Misc, source: Path, quality: int, on_saved: Callable[[Path, bool], None]):
         super().__init__(parent)
+        self.withdraw()
         self.source = source
         self.quality = quality
         self.on_saved = on_saved
@@ -48,11 +50,11 @@ class CropDialog(tk.Toplevel):
         self.scale = 1.0
         self.offset = (0.0, 0.0)
         self.title(tr("トリミング - {name}", name=source.name))
-        self.geometry("1000x760")
-        self.minsize(720, 540)
         self.transient(parent)
         self.protocol("WM_DELETE_WINDOW", self._close)
         self._build_ui()
+        self._set_initial_geometry(parent)
+        self.deiconify()
         self.after_idle(self._render)
         self._ui_poll_id = self.after(100, self._poll_ui_events)
         self.grab_set()
@@ -78,26 +80,76 @@ class CropDialog(tk.Toplevel):
         self.transparent_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(options, text="選択範囲内の対象だけをAIで切り出し、背景を透過", variable=self.transparent_var,
                         command=self._toggle_ai_options).pack(side="left")
-        ttk.Label(options, text="モデル:").pack(side="left", padx=(18, 4))
-        self.model_var = tk.StringVar(value="u2net")
-        self.model_combo = ttk.Combobox(options, textvariable=self.model_var, state="disabled", width=22,
-                                        values=("u2net", "isnet-anime"))
-        self.model_combo.pack(side="left")
-        ttk.Label(options, text="（u2net=汎用 / isnet-anime=イラスト）").pack(side="left", padx=5)
         self.detect_button = ttk.Button(options, text="中央の対象を自動検出", command=self._auto_detect)
         self.detect_button.pack(side="right")
-        footer = ttk.Frame(self)
-        footer.pack(fill="x", padx=12, pady=(5, 12))
+
+        model_options = ttk.Frame(self)
+        model_options.pack(fill="x", padx=12, pady=(4, 0))
+        ttk.Label(model_options, text="モデル:").pack(side="left", padx=(0, 4))
+        self.model_var = tk.StringVar(value="u2net")
+        self.model_combo = ttk.Combobox(model_options, textvariable=self.model_var, state="disabled", width=22,
+                                        values=("u2net", "isnet-anime"))
+        self.model_combo.pack(side="left")
+        ttk.Label(model_options, text="（u2net=汎用 / isnet-anime=イラスト）").pack(side="left", padx=5)
+
+        status = ttk.Frame(self)
+        status.pack(fill="x", padx=12, pady=(6, 2))
         self.range_var = tk.StringVar(value=tr("範囲を選択してください"))
-        ttk.Label(footer, textvariable=self.range_var).pack(side="left")
+        self.range_label = ttk.Label(status, textvariable=self.range_var, anchor="w")
+        self.range_label.pack(side="left", fill="x", expand=True)
         self.progress_var = tk.DoubleVar(value=0)
-        ttk.Progressbar(footer, variable=self.progress_var, maximum=100, length=150).pack(side="left", padx=12)
+        ttk.Progressbar(status, variable=self.progress_var, maximum=100, length=150).pack(side="right", padx=(12, 0))
+
+        footer = ttk.Frame(self)
+        footer.pack(fill="x", padx=12, pady=(2, 12))
         self.cancel_button = ttk.Button(footer, text="キャンセル", command=self._close)
         self.cancel_button.pack(side="right", padx=4)
         self.new_button = ttk.Button(footer, text="別名で保存（_trim）", command=lambda: self._save(False))
         self.new_button.pack(side="right", padx=4)
         self.overwrite_button = ttk.Button(footer, text="元画像を上書き", command=lambda: self._save(True))
         self.overwrite_button.pack(side="right", padx=4)
+
+    def _set_initial_geometry(self, parent: tk.Misc) -> None:
+        """Open at the final DPI-aware size without a smaller intermediate flash."""
+        self.update_idletasks()
+        scale = max(1.0, min(2.5, float(getattr(parent, "ui_scale", 1.0))))
+        parent.update_idletasks()
+        parent_left, parent_top = parent.winfo_rootx(), parent.winfo_rooty()
+        parent_width, parent_height = parent.winfo_width(), parent.winfo_height()
+        center_x = parent_left + parent_width // 2
+        center_y = parent_top + parent_height // 2
+        monitor_left, monitor_top = 0, 0
+        monitor_width = max(800, self.winfo_screenwidth())
+        monitor_height = max(600, self.winfo_screenheight())
+        try:
+            with mss.mss() as grabber:
+                monitors = [dict(item) for item in grabber.monitors[1:]]
+            monitor = next(
+                item for item in monitors
+                if item["left"] <= center_x < item["left"] + item["width"]
+                and item["top"] <= center_y < item["top"] + item["height"]
+            )
+            monitor_left, monitor_top = monitor["left"], monitor["top"]
+            monitor_width, monitor_height = monitor["width"], monitor["height"]
+        except Exception:
+            logging.debug("Could not determine the crop dialog monitor", exc_info=True)
+
+        width = min(max(round(1120 * scale), self.winfo_reqwidth()), monitor_width - 40)
+        height = min(max(round(800 * scale), self.winfo_reqheight()), monitor_height - 80)
+        left = max(
+            monitor_left + 20,
+            min(center_x - width // 2, monitor_left + monitor_width - width - 20),
+        )
+        top = max(
+            monitor_top + 20,
+            min(center_y - height // 2, monitor_top + monitor_height - height - 40),
+        )
+        self.geometry(f"{width}x{height}+{left}+{top}")
+        self.minsize(
+            min(width, max(760, round(800 * scale))),
+            min(height, max(540, round(580 * scale))),
+        )
+        self.resizable(True, True)
 
     def _toggle_ai_options(self) -> None:
         self.model_combo.configure(state="readonly" if self.transparent_var.get() else "disabled")
